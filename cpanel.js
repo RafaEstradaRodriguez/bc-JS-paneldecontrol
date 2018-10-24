@@ -125,9 +125,27 @@ function edit(e) {
     document.querySelector("#inputNombre").value = fila[1].innerHTML;
     document.querySelector("#inputGenero").value = fila[2].innerHTML;
     document.querySelector("#inputAño").value = fila[3].innerHTML;
+
+
+   // modificaciones kamil
+   var guardar = document.querySelector('#guardar');
+   guardar.innerHTML= 'actualizar';
+
+   // estado modificar
+   var modificar = document.querySelector('#titular');
+   modificar.innerHTML = 'esta en el apartado modificar';
+
+
+
+
+
+
 }
 
 function borrar(e){
     var fila = e.target.parentNode.parentNode;
     fila.parentNode.removeChild(fila);
 }
+// estado borrar
+var borrar = document.querySelector ('#titular')
+borrar.innerHTML = 'esta en el apartado de borrar'
