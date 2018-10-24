@@ -1,4 +1,5 @@
 // CARGA DE DATOS
+var estado = "listado";
 var peliculas = [
 { 
   "id" : 1,
@@ -116,15 +117,20 @@ for (var i = 0; i < btnGuardar.length; i++) {
 
 function edit(e) {
     var fila = e.target.parentNode.parentNode.childNodes;
-    for (var i=0;i<fila.length;i++) {
-        console.log(fila[i]);
-    }
+    
 
     // Recogemos el id
     var id = fila[0];
     document.querySelector("#inputNombre").value = fila[1].innerHTML;
     document.querySelector("#inputGenero").value = fila[2].innerHTML;
     document.querySelector("#inputAño").value = fila[3].innerHTML;
+    
+    
+//***************Editado por Cesar Moran************************
+    var actualizar = document.querySelector("#guardar");
+    actualizar.innerHTML = "Actualizar";
+//***************Editado por Cesar Moran************************
+    
 }
 
 function borrar(e){
