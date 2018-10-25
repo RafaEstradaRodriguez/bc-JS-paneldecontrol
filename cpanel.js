@@ -1,4 +1,8 @@
 // CARGA DE DATOS
+var estado = {
+    "accion":"listado",
+    "elemento":null
+}
 var peliculas = [
 { 
   "id" : 1,
@@ -64,6 +68,12 @@ btnGuardar.onclick = function() {
     var nombre = document.querySelector("#inputNombre").value;
     var genero = document.querySelector("#inputGenero").value;
     var año = document.querySelector("#inputAño").value;
+    if (nombre == ""){
+        var div=document.createElement.("div");
+        //div.classList.add('alert', 'alert-danger');
+        //div.innerHTML="No puedes guardar una pelicula sin nombre";
+        //document.append(div);
+    }else {
     // Calculamos el nuevo id a mano
     var tabla = document.querySelector("#tabla_pelis");
     var id = tabla.rows.length;
@@ -77,6 +87,7 @@ btnGuardar.onclick = function() {
     addPeliGuay(peli);
 
     clearForm();
+}
 }
 
 function clearForm(){
@@ -115,7 +126,16 @@ for (var i = 0; i < btnGuardar.length; i++) {
 }
 
 function edit(e) {
-    var fila = e.target.parentNode.parentNode.childNodes;
+    var btnAct = document.createElement("btn");
+    btnAct.id = "actBtn";
+    btnAct.classList.add('btn', 'btn-primary', 'm-r-1em');
+    btnAct.innerHTML = "Actualizar";
+    btnguardar = document.querySelector("#guardar");
+    var pos = btnguardar.parentNode;
+    btnguardar.parentNode.removeChild(btnguardar);
+    pos.appendChild(btnAct);
+    var btnAct = document.querySelector("#actBtn");
+    fila = e.target.parentNode.parentNode.childNodes;
     for (var i=0;i<fila.length;i++) {
         console.log(fila[i]);
     }
@@ -125,8 +145,18 @@ function edit(e) {
     document.querySelector("#inputNombre").value = fila[1].innerHTML;
     document.querySelector("#inputGenero").value = fila[2].innerHTML;
     document.querySelector("#inputAño").value = fila[3].innerHTML;
+    btnAct.addEventListener("click",update);
 }
-
+function update(){
+    fila[1].innerHTML = document.querySelector("#inputNombre").value;
+    fila[2].innerHTML = document.querySelector("#inputGenero").value;
+    fila[3].innerHTML = document.querySelector("#inputAño").value;
+    clearForm();
+    var btnAct = document.querySelector("#actBtn");
+    var pos = btnAct.parentNode;
+    btnAct.parentNode.removeChild(btnAct);
+    pos.appendChild(btnguardar);
+}
 function borrar(e){
     var fila = e.target.parentNode.parentNode;
     fila.parentNode.removeChild(fila);
