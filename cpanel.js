@@ -1,3 +1,10 @@
+const LIST = "list";
+const EDIT = "edit";
+
+var estado = {
+    "action" : LIST,
+    "elem" : null
+};
 // CARGA DE DATOS
 var peliculas = [
 { 
@@ -14,52 +21,24 @@ var peliculas = [
 }
 ];
 
-peliculas.forEach(addPeliGuay);
-
-function addPeli(_peli){
-
-    var tabla = document.querySelector("#tabla_pelis tbody");
-    var fila = document.createElement("tr");
-
-    var celdaNombre = document.createElement("td");
-    celdaNombre.innerHTML = _peli.id;   
-    fila.appendChild(celdaNombre);
-
-    var celdaNombre = document.createElement("td");
-    celdaNombre.innerHTML = _peli.nombre;   
-    fila.appendChild(celdaNombre);
-
-    var celdaNombre = document.createElement("td");
-    celdaNombre.innerHTML = _peli.genero;   
-    fila.appendChild(celdaNombre);
-    
-    var celdaNombre = document.createElement("td");
-    celdaNombre.innerHTML = _peli.año;   
-    fila.appendChild(celdaNombre);
-
-    var celda3 = document.createElement("td");
-    var linkCelda3 = document.createElement("btn");
-    linkCelda3.id = "editBtn";
-    linkCelda3.classList.add('btn', 'btn-primary', 'm-r-1em');
-    linkCelda3.innerHTML = "Editar";
-    celda3.appendChild(linkCelda3);
-    
-    var linkCeldaBorrar = document.createElement("btn");
-    linkCeldaBorrar.id = "delBtn";
-    linkCeldaBorrar.classList.add('btn', 'btn-danger', 'm-r-1em');
-    linkCeldaBorrar.innerHTML = "Borrar";
-    celda3.appendChild(linkCeldaBorrar);
-
-    fila.appendChild(celda3);
-   
-    tabla.appendChild(fila);
-    
+function update(){
+    // Revertimos los cambios en los botones y estado
+    document.querySelector("#guardar").innerHTML = "Guardar";
+    estado.action = LIST;
+    // Modificamos el DOM
+    var fila = estado.elem.childNodes;
+    fila[1].innerHTML = document.querySelector("#inputNombre").value;
+    fila[2].innerHTML = document.querySelector("#inputGenero").value;
+    fila[3].innerHTML = document.querySelector("#inputAño").value;
+    // Reactivamos el boton de borrar
+    var delBtn = estado.elem.querySelector("#delBtn");
+    delBtn.addEventListener("click", borrar);
+    delBtn.classList.remove("btn-warning");
+    delBtn.classList.add("btn-danger");
+    clearForm();
 }
 
-// GUARDAR
-var btnGuardar = document.querySelector("#guardar");
-
-btnGuardar.onclick = function() {
+function save(){
 
     var nombre = document.querySelector("#inputNombre").value;
     var genero = document.querySelector("#inputGenero").value;
@@ -75,6 +54,10 @@ btnGuardar.onclick = function() {
     peli.año = año;
     
     addPeliGuay(peli);
+
+    peliculas.push(peli);
+    console.log(peliculas);
+    localStorage.setItem("peliculas", JSON.stringify(peliculas));
 
     clearForm();
 }
@@ -94,11 +77,13 @@ function addPeliGuay(_peli) {
     }
 
     var celdaLinks = row.insertCell();
-    var linkCelda3 = document.createElement("btn");
-    linkCelda3.id = "editBtn";
-    linkCelda3.classList.add('btn', 'btn-primary', 'm-r-1em');
-    linkCelda3.innerHTML = "Editar";
-    celdaLinks.appendChild(linkCelda3);
+    var linkCeldaEdit = document.createElement("btn");
+    linkCeldaEdit.id = "editBtn";
+    linkCeldaEdit.classList.add('btn', 'btn-primary', 'm-r-1em');
+    linkCeldaEdit.innerHTML = "Editar";
+    linkCeldaEdit.addEventListener("click", edit);
+
+    celdaLinks.appendChild(linkCeldaEdit);
     
     var linkCeldaBorrar = document.createElement("btn");
     linkCeldaBorrar.id = "delBtn";
@@ -109,25 +94,51 @@ function addPeliGuay(_peli) {
 }
 
 // EDITAR
-var btnGuardar = document.querySelectorAll("#editBtn");
-for (var i = 0; i < btnGuardar.length; i++) {
-    btnGuardar[i].addEventListener("click", edit);
-}
-
 function edit(e) {
-    var fila = e.target.parentNode.parentNode.childNodes;
-    for (var i=0;i<fila.length;i++) {
-        console.log(fila[i]);
-    }
+    estado.action = EDIT;
 
-    // Recogemos el id
-    var id = fila[0];
+    var fila = e.target.parentNode.parentNode.childNodes;
+
     document.querySelector("#inputNombre").value = fila[1].innerHTML;
     document.querySelector("#inputGenero").value = fila[2].innerHTML;
     document.querySelector("#inputAño").value = fila[3].innerHTML;
+
+    document.querySelector("#guardar").innerHTML = "Actualizar";
+    // Añadimos la fila a nuestro objeto estado
+    estado.elem = e.target.parentNode.parentNode;
+    // Desactivamos el boton de Borrar
+    var delBtn = e.target.parentNode.querySelector("#delBtn");
+    delBtn.removeEventListener("click", borrar);
+    delBtn.classList.add("btn-warning");
+    delBtn.classList.remove("btn-danger");
+    
 }
 
 function borrar(e){
     var fila = e.target.parentNode.parentNode;
     fila.parentNode.removeChild(fila);
+}
+
+//localStorage.setItem("peliculas", JSON.stringify(peliculas));
+
+function init(){
+        peliculas = JSON.parse(localStorage.getItem("peliculas"));
+}
+
+init();
+
+peliculas.forEach(addPeliGuay);
+
+// GUARDAR
+var btnGuardar = document.querySelector("#guardar");
+
+btnGuardar.onclick = function() {
+    switch (estado.action) {
+        case EDIT:
+            update();
+            break;
+        default:
+            save();
+    }
+
 }
